@@ -1,0 +1,9 @@
+[opener]
+edit = [
+    { exec = 'nvim "$@"', block = true, desc = "Edit" },
+]
+
+[preview]
+image_filter = "lanczos3"
+# 关键：指定预览协议为 kitty
+image_preview_method = "kitty"
