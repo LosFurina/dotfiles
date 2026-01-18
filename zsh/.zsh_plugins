@@ -114,7 +114,7 @@ if [[ -n "$ZPLUG_HOME" ]]; then
   # zplug "plugins/tmux", from:oh-my-zsh
 
   # Node.js 版本管理
-  # zplug "plugins/nvm", from:oh-my-zsh
+  zplug "plugins/nvm", from:oh-my-zsh
 
   # GitHub CLI 补全
   # zplug "plugins/gh", from:oh-my-zsh

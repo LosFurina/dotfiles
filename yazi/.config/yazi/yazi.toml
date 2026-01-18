@@ -53,13 +53,13 @@ play = [
 [open]
 # 文件关联规则
 rules = [
-    { name = "*/", use = ["edit", "open", "reveal"] },
+    { name = "*/", use = ["edit"] },
 
     { mime = "text/*", use = ["edit", "open", "reveal"] },
     { mime = "image/*", use = ["open", "reveal"] },
     { mime = "video/*", use = ["play", "reveal"] },
     { mime = "audio/*", use = ["play", "reveal"] },
-    { mime = "inode/directory", use = ["open", "reveal"] },
+    { mime = "inode/directory", use = ["edit"] },
 
     { mime = "application/json", use = ["edit", "open", "reveal"] },
     { mime = "*/javascript", use = ["edit", "open", "reveal"] },
