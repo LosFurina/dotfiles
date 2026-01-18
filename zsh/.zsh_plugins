@@ -1,3 +1,4 @@
+# === Zplug 插件管理 ===
 # 自动寻找 zplug
 if [ -f ~/.zplug/init.zsh ]; then
     source ~/.zplug/init.zsh
@@ -7,26 +8,147 @@ elif [ -f /opt/homebrew/opt/zplug/init.zsh ]; then
     source /opt/homebrew/opt/zplug/init.zsh
 fi
 
-source /usr/share/zsh/scripts/zplug/init.zsh 2>/dev/null || source ~/.zplug/init.zsh
-
 if [[ -n "$ZPLUG_HOME" ]]; then
-  # 基础核心
+  # ============================================
+  # 主题
+  # ============================================
+
+  # Powerlevel10k - 快速美观的提示符
   zplug "romkatv/powerlevel10k", as:theme, depth:1
+
+  # ============================================
+  # 核心功能增强
+  # ============================================
+
+  # 自动建议 (根据历史显示命令建议)
   zplug "zsh-users/zsh-autosuggestions"
+
+  # 补全增强
   zplug "zsh-users/zsh-completions"
+
+  # FZF 集成的 tab 补全
   zplug "Aloxaf/fzf-tab"
-  # 效率提升
+
+  # ============================================
+  # 编辑器模式
+  # ============================================
+
+  # Vi 模式增强
   zplug "jeffreytse/zsh-vi-mode"
+
+  # 自动配对括号/引号
   zplug "hlissner/zsh-autopair", defer:2
-  zplug "agkozak/zsh-z"
+
+  # ============================================
+  # Git 增强
+  # ============================================
+
+  # Forgit - FZF 风格的 Git 命令
   zplug "wfxr/forgit"
+
+  # ============================================
+  # 提示与帮助
+  # ============================================
+
+  # 别名提示 (当你输入完整命令时提示有可用别名)
   zplug "djui/alias-tips"
-  # 历史与语法 (必须最后加载)
+
+  # 命令时间统计 (显示长时间运行命令的执行时间)
+  zplug "popstas/zsh-command-time"
+
+  # ============================================
+  # 开发工具集成
+  # ============================================
+
+  # Docker 补全增强
+  zplug "plugins/docker", from:oh-my-zsh
+  zplug "plugins/docker-compose", from:oh-my-zsh
+
+  # Kubectl 补全和别名
+  zplug "plugins/kubectl", from:oh-my-zsh
+
+  # Python 虚拟环境自动切换
+  zplug "MichaelAquilina/zsh-autoswitch-virtualenv"
+
+  # 系统剪贴板集成
+  zplug "plugins/copyfile", from:oh-my-zsh  # 复制文件内容
+  zplug "plugins/copybuffer", from:oh-my-zsh  # 复制当前命令行
+
+  # ============================================
+  # 历史记录增强
+  # ============================================
+
+  # 历史子串搜索 (上下箭头搜索历史)
   zplug "zsh-users/zsh-history-substring-search"
+
+  # ============================================
+  # 语法高亮 (必须最后加载)
+  # ============================================
+
+  # 实时语法高亮
   zplug "zsh-users/zsh-syntax-highlighting", defer:2
+
+  # ============================================
+  # 可选插件 (根据需要取消注释)
+  # ============================================
+
+  # 颜色增强
+  # zplug "chrissicool/zsh-256color"
+
+  # 自动 ls (cd 后自动显示目录内容)
+  # zplug "desyncr/auto-ls"
+
+  # 更好的目录切换 (autojump 替代，但你已经有 zoxide)
+  # zplug "agkozak/zsh-z"
+
+  # Sudo 插件 (双击 ESC 在命令前添加 sudo)
+  # zplug "plugins/sudo", from:oh-my-zsh
+
+  # 常用别名集合
+  # zplug "plugins/common-aliases", from:oh-my-zsh
+
+  # 提取压缩包的 extract 命令 (你已经在 aliases 中定义了)
+  # zplug "plugins/extract", from:oh-my-zsh
+
+  # Tmux 集成
+  # zplug "plugins/tmux", from:oh-my-zsh
+
+  # Node.js 版本管理
+  # zplug "plugins/nvm", from:oh-my-zsh
+
+  # GitHub CLI 补全
+  # zplug "plugins/gh", from:oh-my-zsh
+
+  # ============================================
+  # 安装与加载
+  # ============================================
+
+  # 检查并安装未安装的插件
   if ! zplug check; then
-    printf "Install zplug plugins? [y/N]: "
-    read -q && zplug install
+    zplug install
   fi
+
+  # 加载所有插件
   zplug load
+
+  # ============================================
+  # 插件配置
+  # ============================================
+
+  # ZSH Autosuggestions 配置
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#666666"
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+  # Command Time 配置
+  ZSH_COMMAND_TIME_MIN_SECONDS=3
+  ZSH_COMMAND_TIME_MSG="执行时间: %s"
+  ZSH_COMMAND_TIME_COLOR="cyan"
+
+  # History Substring Search 配置
+  bindkey '^[[A' history-substring-search-up
+  bindkey '^[[B' history-substring-search-down
+  bindkey -M vicmd 'k' history-substring-search-up
+  bindkey -M vicmd 'j' history-substring-search-down
 fi
+

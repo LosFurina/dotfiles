@@ -1,0 +1,128 @@
+[user]
+    name = Wayne
+    email = github@weijun.online
+
+[core]
+    editor = nvim
+    pager = delta
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+    # 信任所有文件权限
+    filemode = false
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+    default = current
+
+[fetch]
+    prune = true
+
+[alias]
+    # 基础快捷方式
+    co = checkout
+    br = branch
+    ci = commit
+    st = status -sb
+    cp = cherry-pick
+
+    # 日志查看
+    last = log -1 HEAD
+    lg = log --graph --oneline --decorate --all
+    lgs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+    # 撤销操作
+    undo = reset HEAD~1 --mixed
+    unstage = reset HEAD --
+
+    # 工作区操作
+    wip = !git add -A && git commit -m "WIP: work in progress"
+    unwip = reset HEAD~1
+
+    # 分支管理
+    branches = branch -a
+    tags = tag -l
+    remotes = remote -v
+
+    # 清理操作
+    cleanup = !git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d
+
+    # 查看修改
+    unstaged = diff
+    staged = diff --cached
+    both = diff HEAD
+
+[diff]
+    tool = nvimdiff
+    colorMoved = zebra
+    algorithm = histogram
+
+[diff "bin"]
+    textconv = hexdump -v -C
+
+[merge]
+    tool = nvimdiff
+    conflictstyle = diff3
+
+[mergetool]
+    prompt = false
+    keepBackup = false
+
+[rerere]
+    enabled = true
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+# Git Delta 配置 (更好的 diff 显示)
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+    side-by-side = false
+    syntax-theme = Dracula
+
+[interactive]
+    diffFilter = delta --color-only
+
+# 性能优化
+[feature]
+    manyFiles = true
+
+[index]
+    threads = true
+
+# 安全设置
+[transfer]
+    fsckobjects = true
+
+[receive]
+    fsckobjects = true
+
+# URL 别名 (加速克隆)
+[url "git@github.com:"]
+    insteadOf = https://github.com/

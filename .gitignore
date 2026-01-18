@@ -1,7 +1,142 @@
-# 忽略所有本地私有文件
+# === Dotfiles 仓库 .gitignore ===
+
+# ============================================
+# 私密文件 (重要！)
+# ============================================
+
+# 所有 .local 文件 (用于存储私密配置)
 *.local
-# .gitignore
-.DS_Store          # macOS 垃圾文件
-*.swp              # Vim 临时文件
-zsh/.zcompdump* # Zsh 补全缓存
-nvim/.netrwhist   # Nvim 历史
+
+# SSH 私钥和敏感配置
+ssh/.ssh/id_*
+ssh/.ssh/*_rsa
+ssh/.ssh/*_ed25519
+ssh/.ssh/known_hosts
+ssh/.ssh/authorized_keys
+ssh/.ssh/sockets/*
+
+# API 密钥和凭证
+**/secrets.*
+**/credentials.*
+**/.env
+**/.env.*
+!**/.env.example
+
+# ============================================
+# 操作系统生成文件
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# 编辑器临时文件
+# ============================================
+
+# Vim/Neovim
+*.swp
+*.swo
+*.swn
+*~
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+nvim/.netrwhist
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+
+# ============================================
+# Zsh 相关
+# ============================================
+
+# Zsh 补全缓存
+zsh/.zcompdump*
+.zcompdump*
+
+# Zsh 历史记录 (如果不想提交)
+# zsh/.zsh_history
+
+# Zplug 安装目录
+.zplug/
+
+# ============================================
+# Tmux
+# ============================================
+
+# Tmux 插件目录
+tmux/.tmux/plugins/
+tmux/.tmux/resurrect/
+
+# ============================================
+# Git 相关
+# ============================================
+
+# 备份文件
+*.bak
+*.backup
+*.orig
+
+# ============================================
+# 其他
+# ============================================
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
+# Node modules (如果有 JavaScript 配置)
+node_modules/
+
+# Python (如果有 Python 脚本)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ============================================
+# 特殊忽略
+# ============================================
+
+# Powerlevel10k 配置 (可能包含个人偏好)
+# zsh/.p10k.zsh
+
+# Notes 文件
+notes.txt
+TODO.md
+

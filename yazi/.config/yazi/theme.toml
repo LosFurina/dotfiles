@@ -1,0 +1,141 @@
+# === Yazi 主题配置 ===
+# 文档: https://yazi-rs.github.io/docs/configuration/theme
+
+# 你可以从这里获取更多主题: https://github.com/yazi-rs/themes
+
+[manager]
+cwd = { fg = "cyan" }
+
+# 悬停状态
+hovered = { fg = "black", bg = "lightblue" }
+preview_hovered = { underline = true }
+
+# 查找
+find_keyword = { fg = "yellow", italic = true }
+find_position = { fg = "magenta", bg = "reset", italic = true }
+
+# 标记
+marker_selected = { fg = "lightgreen", bg = "lightgreen" }
+marker_copied = { fg = "lightyellow", bg = "lightyellow" }
+marker_cut = { fg = "lightred", bg = "lightred" }
+
+# 标签页
+tab_active = { fg = "black", bg = "lightblue" }
+tab_inactive = { fg = "white", bg = "darkgray" }
+tab_width = 1
+
+# 边框样式
+border_symbol = "│"
+border_style = { fg = "gray" }
+
+# 文件列表
+[status]
+separator_open = ""
+separator_close = ""
+separator_style = { fg = "gray", bg = "gray" }
+
+# 模式指示器
+mode_normal = { fg = "black", bg = "lightblue", bold = true }
+mode_select = { fg = "black", bg = "lightgreen", bold = true }
+mode_unset = { fg = "black", bg = "lightmagenta", bold = true }
+
+# 进度条
+progress_label = { fg = "white", bold = true }
+progress_normal = { fg = "blue", bg = "black" }
+progress_error = { fg = "red", bg = "black" }
+
+# 权限
+permissions_t = { fg = "lightgreen" }
+permissions_r = { fg = "lightyellow" }
+permissions_w = { fg = "lightred" }
+permissions_x = { fg = "lightcyan" }
+permissions_s = { fg = "darkgray" }
+
+[select]
+border = { fg = "blue" }
+active = { fg = "magenta" }
+inactive = {}
+
+[input]
+border = { fg = "blue" }
+title = {}
+value = {}
+selected = { reversed = true }
+
+[completion]
+border = { fg = "blue" }
+active = { bg = "darkgray" }
+inactive = {}
+
+[tasks]
+border = { fg = "blue" }
+title = {}
+hovered = { underline = true }
+
+[which]
+cols = 3
+mask = { bg = "black" }
+cand = { fg = "lightcyan" }
+rest = { fg = "darkgray" }
+desc = { fg = "magenta" }
+separator = "  "
+separator_style = { fg = "darkgray" }
+
+[help]
+on = { fg = "magenta" }
+run = { fg = "cyan" }
+desc = {}
+hovered = { bg = "darkgray", bold = true }
+footer = { fg = "black", bg = "white" }
+
+[filetype]
+
+rules = [
+    # 图片
+    { mime = "image/*", fg = "cyan" },
+
+    # 视频
+    { mime = "video/*", fg = "yellow" },
+    { mime = "audio/*", fg = "yellow" },
+
+    # 压缩包
+    { mime = "application/zip", fg = "magenta" },
+    { mime = "application/gzip", fg = "magenta" },
+    { mime = "application/x-tar", fg = "magenta" },
+    { mime = "application/x-bzip", fg = "magenta" },
+    { mime = "application/x-bzip2", fg = "magenta" },
+    { mime = "application/x-7z-compressed", fg = "magenta" },
+    { mime = "application/x-rar", fg = "magenta" },
+
+    # 文档
+    { mime = "text/*", fg = "green" },
+    { mime = "application/json", fg = "green" },
+    { mime = "*/xml", fg = "green" },
+
+    # 可执行文件
+    { name = "*", is = "exec", fg = "red" },
+
+    # 目录
+    { name = "*/", fg = "blue" },
+
+    # 隐藏文件
+    { name = ".*", fg = "darkgray" },
+
+    # 特殊文件
+    { name = "README.*", fg = "lightyellow", bold = true },
+    { name = "Makefile", fg = "lightyellow" },
+    { name = "LICENSE*", fg = "lightyellow" },
+    { name = "*.lock", fg = "darkgray" },
+]
+
+[icons]
+"Desktop" = ""
+"Documents" = ""
+"Downloads" = ""
+"Pictures" = ""
+"Music" = ""
+"Movies" = ""
+"Videos" = ""
+"Public" = ""
+"Library" = ""
+"Development" = ""

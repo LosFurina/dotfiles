@@ -1,28 +1,77 @@
+# === Zsh 别名与函数配置 ===
+# 适配 macOS、Arch、Debian 的通用配置
+
+# ============================================
 # 基础导航
+# ============================================
+
 alias ..='cd ..'
 alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ~='cd ~'
+alias -- -='cd -'  # 返回上一个目录
+
 alias cls='clear'
 alias zshconfig='nvim ~/dotfiles/zsh/.zshrc'
 alias zshsource='source ~/.zshrc'
+alias zshenv='nvim ~/dotfiles/zsh/.zsh_env'
+alias zshalias='nvim ~/dotfiles/zsh/.zsh_aliases'
 
+# ============================================
 # 安全开关
+# ============================================
+
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+alias ln='ln -i'
 
+# 更安全的删除（使用 trash 如果可用）
+if command -v trash >/dev/null 2>&1; then
+    alias del='trash'
+elif command -v gio >/dev/null 2>&1; then
+    alias del='gio trash'
+else
+    alias del='rm -i'
+fi
+
+# ============================================
 # 现代工具替代
-if command -v eza >/dev/null; then
+# ============================================
+
+# Eza (ls 替代)
+if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'
     alias ll='eza --icons -l --git --group-directories-first'
     alias la='eza --icons -la --git --group-directories-first'
-    alias tree='eza --icons --tree --level=2'
+    alias lt='eza --icons --tree --level=2 --group-directories-first'
+    alias lt3='eza --icons --tree --level=3 --group-directories-first'
+    alias lsd='eza --icons -lD'  # 仅显示目录
+    alias lsf='eza --icons -lf --color=always | grep -v /'  # 仅显示文件
+else
+    alias ls='ls --color=auto'
+    alias ll='ls -lh'
+    alias la='ls -lAh'
 fi
 
-if command -v bat >/dev/null; then
-    alias cat='bat'
+# Bat (cat 替代)
+if command -v bat >/dev/null 2>&1; then
+    alias cat='bat --paging=never'
+    alias ccat='bat --style=plain --paging=never'  # 纯文本模式
+    alias bathelp='bat --list-themes'
 fi
 
-# Yazi 增强：退出时自动 cd 到当前目录
+# Zoxide (cd 替代)
+if command -v zoxide >/dev/null 2>&1; then
+    alias cd='z'
+fi
+
+# ============================================
+# Yazi 文件管理器增强
+# ============================================
+
+# 退出时自动 cd 到当前目录
 function yy() {
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
     yazi "$@" --cwd-file="$tmp"
@@ -32,6 +81,352 @@ function yy() {
     rm -f -- "$tmp"
 }
 
-# 解决 Nvim 里的一个小习惯：输入 vi 自动打开 nvim
+# ============================================
+# 编辑器别名
+# ============================================
+
 alias vi='nvim'
 alias vim='nvim'
+alias v='nvim'
+alias nv='nvim'
+
+# 快速编辑配置文件
+alias vimconfig='nvim ~/dotfiles/nvim/.config/nvim/init.lua'
+alias kittyconfig='nvim ~/dotfiles/kitty/.config/kitty/kitty.conf'
+alias gitconfig='nvim ~/dotfiles/git/.gitconfig'
+alias tmuxconfig='nvim ~/dotfiles/tmux/.tmux.conf'
+alias dotfiles='cd ~/dotfiles && nvim'
+
+# ============================================
+# Git 增强别名
+# ============================================
+
+alias g='git'
+alias gs='git status -sb'
+alias ga='git add'
+alias gaa='git add --all'
+alias gap='git add -p'  # 交互式添加
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gca='git commit --amend'
+alias gcan='git commit --amend --no-edit'
+
+alias gp='git push'
+alias gpf='git push --force-with-lease'  # 更安全的强制推送
+alias gl='git pull'
+alias gf='git fetch'
+
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gdt='git difftool'
+
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gsw='git switch'
+alias gswc='git switch -c'
+
+alias gb='git branch'
+alias gba='git branch -a'
+alias gbd='git branch -d'
+alias gbD='git branch -D'
+
+alias gm='git merge'
+alias gma='git merge --abort'
+alias gr='git rebase'
+alias gri='git rebase -i'
+alias gra='git rebase --abort'
+alias grc='git rebase --continue'
+
+alias gst='git stash'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+alias gsta='git stash apply'
+
+alias glg='git log --graph --oneline --decorate --all'
+alias glgs='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit'
+alias glo='git log --oneline'
+alias glast='git log -1 HEAD'
+
+alias gclean='git clean -fd'
+alias grh='git reset HEAD'
+alias grhh='git reset --hard HEAD'
+alias gundo='git reset HEAD~1 --mixed'
+
+# Lazygit
+if command -v lazygit >/dev/null 2>&1; then
+    alias lg='lazygit'
+fi
+
+# ============================================
+# Docker 快捷方式
+# ============================================
+
+alias d='docker'
+alias dc='docker-compose'
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dpsa='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dimg='docker images'
+alias dex='docker exec -it'
+alias dlogs='docker logs -f'
+alias dstop='docker stop'
+alias drm='docker rm'
+alias drmi='docker rmi'
+alias dprune='docker system prune -af'
+alias dvol='docker volume ls'
+alias dnet='docker network ls'
+
+# Docker Compose
+alias dcu='docker-compose up -d'
+alias dcd='docker-compose down'
+alias dcl='docker-compose logs -f'
+alias dcr='docker-compose restart'
+alias dcb='docker-compose build'
+
+# Lazydocker
+if command -v lazydocker >/dev/null 2>&1; then
+    alias ld='lazydocker'
+fi
+
+# ============================================
+# Kubernetes 快捷方式
+# ============================================
+
+alias k='kubectl'
+alias kgp='kubectl get pods'
+alias kgs='kubectl get svc'
+alias kgd='kubectl get deploy'
+alias kgn='kubectl get nodes'
+alias kga='kubectl get all'
+
+alias kdesc='kubectl describe'
+alias kdel='kubectl delete'
+alias klog='kubectl logs -f'
+alias kexec='kubectl exec -it'
+
+alias kctx='kubectl config current-context'
+alias kns='kubectl config set-context --current --namespace'
+
+# ============================================
+# 系统监控工具
+# ============================================
+
+# Bottom (top/htop 替代)
+if command -v btm >/dev/null 2>&1; then
+    alias top='btm'
+    alias htop='btm'
+elif command -v htop >/dev/null 2>&1; then
+    alias top='htop'
+fi
+
+# Procs (ps 替代)
+if command -v procs >/dev/null 2>&1; then
+    alias ps='procs'
+    alias psa='procs --tree'
+fi
+
+# Duf (df 替代)
+if command -v duf >/dev/null 2>&1; then
+    alias df='duf'
+fi
+
+# Dust (du 替代)
+if command -v dust >/dev/null 2>&1; then
+    alias du='dust'
+fi
+
+# Fd (find 替代)
+if command -v fd >/dev/null 2>&1; then
+    alias find='fd'
+fi
+
+# ============================================
+# 网络工具
+# ============================================
+
+# HTTPie (curl 替代)
+if command -v http >/dev/null 2>&1; then
+    alias get='http GET'
+    alias post='http POST'
+    alias put='http PUT'
+    alias delete='http DELETE'
+fi
+
+# 网络测试
+alias myip='curl -s https://ipinfo.io/ip'
+alias myipinfo='curl -s https://ipinfo.io/json | bat -l json'
+alias speedtest='curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -'
+
+# 端口扫描
+alias ports='netstat -tulanp'
+alias listening='lsof -i -P | grep LISTEN'
+
+# ============================================
+# Python 虚拟环境
+# ============================================
+
+alias venv='python3 -m venv venv'
+alias activate='source venv/bin/activate'
+alias deactivate='deactivate'
+alias py='python3'
+alias pip='pip3'
+alias pipi='pip3 install'
+alias pipu='pip3 install --upgrade'
+alias pipr='pip3 install -r requirements.txt'
+
+# ============================================
+# Node.js / npm / yarn
+# ============================================
+
+alias ni='npm install'
+alias nid='npm install --save-dev'
+alias nig='npm install -g'
+alias nr='npm run'
+alias ns='npm start'
+alias nt='npm test'
+alias nb='npm run build'
+alias nci='rm -rf node_modules package-lock.json && npm install'
+
+alias yi='yarn install'
+alias ya='yarn add'
+alias yad='yarn add --dev'
+alias yr='yarn run'
+alias ys='yarn start'
+alias yt='yarn test'
+alias yb='yarn build'
+
+# ============================================
+# 实用函数
+# ============================================
+
+# 创建目录并进入
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# 提取各种压缩包
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar x "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)           echo "'$1' 无法解压" ;;
+        esac
+    else
+        echo "'$1' 不是有效的文件"
+    fi
+}
+
+# 查找进程
+psg() {
+    ps aux | grep -v grep | grep -i -e VSZ -e "$1"
+}
+
+# 快速查找文件
+ff() {
+    if command -v fd >/dev/null 2>&1; then
+        fd "$1"
+    else
+        find . -type f -name "*$1*"
+    fi
+}
+
+# 快速查找目录
+ffd() {
+    if command -v fd >/dev/null 2>&1; then
+        fd -t d "$1"
+    else
+        find . -type d -name "*$1*"
+    fi
+}
+
+# Git 仓库克隆并进入
+gcl() {
+    git clone "$1" && cd "$(basename "$1" .git)"
+}
+
+# 快速服务器（Python HTTP Server）
+serve() {
+    local port="${1:-8000}"
+    python3 -m http.server "$port"
+}
+
+# 备份文件
+backup() {
+    cp "$1"{,.backup-$(date +%Y%m%d-%H%M%S)}
+}
+
+# ============================================
+# 清理函数
+# ============================================
+
+# 清理 Docker
+cleanup-docker() {
+    echo "清理 Docker 系统..."
+    docker system prune -af --volumes
+    echo "✅ Docker 清理完成"
+}
+
+# 清理 Homebrew (macOS)
+cleanup-brew() {
+    if command -v brew >/dev/null 2>&1; then
+        echo "清理 Homebrew..."
+        brew cleanup
+        brew autoremove
+        echo "✅ Homebrew 清理完成"
+    fi
+}
+
+# 清理 npm
+cleanup-npm() {
+    echo "清理 npm 缓存..."
+    npm cache clean --force
+    echo "✅ npm 清理完成"
+}
+
+# 全部清理
+cleanup-all() {
+    cleanup-docker
+    cleanup-brew
+    cleanup-npm
+    echo "🎉 全部清理完成！"
+}
+
+# ============================================
+# 趣味命令
+# ============================================
+
+# 显示历史命令使用频率
+alias histop='history | awk "{print \$2}" | sort | uniq -c | sort -rn | head -20'
+
+# 快速备忘录
+note() {
+    echo "$(date +'%Y-%m-%d %H:%M:%S'): $*" >> ~/notes.txt
+}
+
+viewnotes() {
+    if command -v bat >/dev/null 2>&1; then
+        bat ~/notes.txt
+    else
+        cat ~/notes.txt
+    fi
+}
+
+# ============================================
+# Tmux 快捷方式
+# ============================================
+
+alias ta='tmux attach -t'
+alias tad='tmux attach -d -t'
+alias ts='tmux new-session -s'
+alias tl='tmux list-sessions'
+alias tksv='tmux kill-server'
+alias tkss='tmux kill-session -t'

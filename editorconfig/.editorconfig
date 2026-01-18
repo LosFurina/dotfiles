@@ -1,0 +1,98 @@
+# EditorConfig 是一个跨编辑器的代码风格统一工具
+# https://editorconfig.org
+
+# 这是最顶层的 EditorConfig 文件
+root = true
+
+# 所有文件的默认设置
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Markdown 文件保留尾部空格 (用于换行)
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
+# Python 使用 4 空格缩进 (PEP 8 标准)
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# Shell 脚本
+[*.{sh,bash,zsh}]
+indent_size = 2
+
+# JavaScript/TypeScript
+[*.{js,jsx,ts,tsx,mjs,cjs}]
+indent_size = 2
+quote_type = single
+
+# JSON
+[*.json]
+indent_size = 2
+
+# YAML (严格要求 2 空格)
+[*.{yml,yaml}]
+indent_size = 2
+
+# TOML
+[*.toml]
+indent_size = 2
+
+# HTML/CSS/SCSS
+[*.{html,css,scss,sass,less}]
+indent_size = 2
+
+# Go (使用 tab)
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Rust
+[*.rs]
+indent_size = 4
+
+# Makefile 必须使用 tab
+[Makefile]
+indent_style = tab
+
+# C/C++
+[*.{c,cpp,h,hpp}]
+indent_size = 2
+
+# Lua
+[*.lua]
+indent_size = 2
+
+# Ruby
+[*.rb]
+indent_size = 2
+
+# Java
+[*.java]
+indent_size = 4
+
+# XML
+[*.xml]
+indent_size = 2
+
+# SQL
+[*.sql]
+indent_size = 2
+
+# 配置文件
+[*.{conf,config,ini}]
+indent_size = 2
+
+# Docker
+[Dockerfile*]
+indent_size = 2
+
+# Git 配置
+[.git*]
+indent_size = 2

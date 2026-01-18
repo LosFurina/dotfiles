@@ -1,0 +1,87 @@
+# === Yazi 主配置文件 ===
+# 文档: https://yazi-rs.github.io/docs/configuration/yazi
+
+[manager]
+# 布局: [1, 4, 3] 表示 左侧栏:预览栏:主窗口 的宽度比例
+ratio = [1, 4, 3]
+sort_by = "modified"
+sort_sensitive = false
+sort_reverse = true
+sort_dir_first = true
+sort_translit = false
+linemode = "size"
+show_hidden = false
+show_symlink = true
+scrolloff = 5
+
+[preview]
+# 预览功能
+tab_size = 2
+max_width = 600
+max_height = 900
+cache_dir = ""
+image_filter = "triangle"
+image_quality = 75
+sixel_fraction = 15
+
+# 预览器配置
+[plugin]
+prepend_previewers = [
+    { name = "*.md", run = "glow" },
+]
+
+[opener]
+# 文件打开器配置
+edit = [
+    { run = 'nvim "$@"', block = true, for = "unix" },
+]
+open = [
+    { run = 'xdg-open "$@"', desc = "Open", for = "linux" },
+    { run = 'open "$@"', desc = "Open", for = "macos" },
+]
+reveal = [
+    { run = 'open -R "$@"', desc = "Reveal", for = "macos" },
+    { run = 'nautilus --select "$@"', desc = "Reveal", for = "linux" },
+]
+extract = [
+    { run = 'unar "$@"', desc = "Extract here" },
+]
+play = [
+    { run = 'mpv "$@"', orphan = true, for = "unix" },
+]
+
+[open]
+# 文件关联规则
+rules = [
+    { name = "*/", use = ["edit", "open", "reveal"] },
+
+    { mime = "text/*", use = ["edit", "open", "reveal"] },
+    { mime = "image/*", use = ["open", "reveal"] },
+    { mime = "video/*", use = ["play", "reveal"] },
+    { mime = "audio/*", use = ["play", "reveal"] },
+    { mime = "inode/directory", use = ["open", "reveal"] },
+
+    { mime = "application/json", use = ["edit", "open", "reveal"] },
+    { mime = "*/javascript", use = ["edit", "open", "reveal"] },
+
+    { mime = "application/zip", use = ["extract", "reveal"] },
+    { mime = "application/gzip", use = ["extract", "reveal"] },
+    { mime = "application/x-tar", use = ["extract", "reveal"] },
+    { mime = "application/x-bzip2", use = ["extract", "reveal"] },
+    { mime = "application/x-7z-compressed", use = ["extract", "reveal"] },
+    { mime = "application/x-rar", use = ["extract", "reveal"] },
+
+    { mime = "*", use = ["open", "reveal"] },
+]
+
+[tasks]
+# 任务配置
+micro_workers = 5
+macro_workers = 10
+bizarre_retry = 5
+image_alloc = 536870912  # 512MB
+image_bound = [0, 0]
+suppress_preload = false
+
+[log]
+enabled = false
