@@ -58,7 +58,7 @@ cd "$DOTFILES_DIR"
 
 echo -e "${BLUE}正在使用 Stow 建立软链接...${NC}"
 # 强制清理冲突的旧文件（小心使用！）
-for folder in nvim zsh yazi; do
+for folder in nvim zsh yazi kitty; do
   # 如果目标位置有真实文件而不是链接，先备份
   [ -f ~/."$folder" ] && ![ -L ~/."$folder" ] && mv ~/."$folder" ~/."$folder".bak
   stow -R "$folder" # -R 代表 Restow，会重新计算链接
