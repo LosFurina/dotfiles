@@ -1,0 +1,21 @@
+# --- 自动识别 Homebrew 路径 (针对 macOS M 芯片) ---
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+fi
+# --- 历史记录设置 (补充了你缺失的部分) ---
+export HISTSIZE=10000          # 内存中保存的历史行数
+export SAVEHIST=10000          # 本地文件保存的历史行数
+export HISTFILE="$HOME/.zsh_history"
+setopt HIST_IGNORE_ALL_DUPS    # 删除重复命令
+setopt HIST_FIND_NO_DUPS       # 搜索时不显示重复
+setopt HIST_REDUCE_BLANKS      # 删除多余空格
+setopt SHARE_HISTORY           # 实时跨窗口共享历史记录
+setopt INC_APPEND_HISTORY      # 立即写入历史文件
+
+# --- 基础环境 ---
+export EDITOR='nvim'
+export VISUAL='nvim'
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export PATH="$HOME/.local/bin:$PATH"

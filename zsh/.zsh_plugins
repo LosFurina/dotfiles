@@ -1,0 +1,32 @@
+# 自动寻找 zplug
+if [ -f ~/.zplug/init.zsh ]; then
+    source ~/.zplug/init.zsh
+elif [ -f /usr/share/zsh/scripts/zplug/init.zsh ]; then
+    source /usr/share/zsh/scripts/zplug/init.zsh
+elif [ -f /opt/homebrew/opt/zplug/init.zsh ]; then
+    source /opt/homebrew/opt/zplug/init.zsh
+fi
+
+source /usr/share/zsh/scripts/zplug/init.zsh 2>/dev/null || source ~/.zplug/init.zsh
+
+if [[ -n "$ZPLUG_HOME" ]]; then
+  # 基础核心
+  zplug "romkatv/powerlevel10k", as:theme, depth:1
+  zplug "zsh-users/zsh-autosuggestions"
+  zplug "zsh-users/zsh-completions"
+  zplug "Aloxaf/fzf-tab"
+  # 效率提升
+  zplug "jeffreytse/zsh-vi-mode"
+  zplug "hlissner/zsh-autopair", defer:2
+  zplug "agkozak/zsh-z"
+  zplug "wfxr/forgit"
+  zplug "djui/alias-tips"
+  # 历史与语法 (必须最后加载)
+  zplug "zsh-users/zsh-history-substring-search"
+  zplug "zsh-users/zsh-syntax-highlighting", defer:2
+  if ! zplug check; then
+    printf "Install zplug plugins? [y/N]: "
+    read -q && zplug install
+  fi
+  zplug load
+fi

@@ -1,0 +1,7 @@
+# 忽略所有本地私有文件
+*.local
+# .gitignore
+.DS_Store          # macOS 垃圾文件
+*.swp              # Vim 临时文件
+zsh/.zcompdump* # Zsh 补全缓存
+nvim/.netrwhist   # Nvim 历史
