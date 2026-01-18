@@ -71,7 +71,7 @@ rules = [
     { mime = "application/x-7z-compressed", use = ["extract", "reveal"] },
     { mime = "application/x-rar", use = ["extract", "reveal"] },
 
-    { mime = "*", use = ["open", "reveal"] },
+    { mime = "*", use = ["edit", "reveal"] },
 ]
 
 [tasks]
