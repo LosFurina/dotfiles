@@ -39,9 +39,6 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.coding.yanky" },
 
     { import = "lazyvim.plugins.extras.lang.markdown" },
-
-    { import = "lazyvim.plugins.extras.coding.copilot" },
-
     -- 👆👆👆 结束 👆👆👆
 
     -- 导入你自己的 lua/plugins 目录（保持这行在最后）
