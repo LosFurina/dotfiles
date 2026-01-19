@@ -41,7 +41,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/dotfiles.git ~/dotfiles
+git clone https://github.com/LosFurina/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
 # 运行安装脚本
@@ -344,7 +344,7 @@ MIT License - 随意使用和修改
 
 ## 📮 联系方式
 
-- GitHub: [@Wayne](https://github.com/Wayne)
+- GitHub: [@Wayne](https://github.com/LosFurina)
 - Email: github@weijun.online
 
 ---
