@@ -1,44 +1,44 @@
 #!/usr/bin/env bash
 
-# 颜色定义
+# Color definitions
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-echo -e "${BLUE}开始分析系统环境...${NC}"
+echo -e "${BLUE}Analyzing system environment...${NC}"
 
-# 辅助函数：检查命令是否存在
+# Helper function: check if command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# 1. 精准识别系统
+# 1. Detect system type
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OS_TYPE="macos"
   ARCH_TYPE=$(uname -m)
 elif [[ -f /etc/os-release ]]; then
-  # 通过 source 命令直接把 os-release 里的变量（如 ID）读入当前脚本环境
+  # Source os-release to get distribution ID
   . /etc/os-release
   OS_TYPE=$ID
 else
-  # 最后的保底手段
+  # Fallback method
   OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
 fi
 
-echo -e "${BLUE}检测到系统类型: ${GREEN}$OS_TYPE${NC}"
-[[ -n "$ARCH_TYPE" ]] && echo -e "${BLUE}系统架构: ${GREEN}$ARCH_TYPE${NC}"
+echo -e "${BLUE}Detected system: ${GREEN}$OS_TYPE${NC}"
+[[ -n "$ARCH_TYPE" ]] && echo -e "${BLUE}Architecture: ${GREEN}$ARCH_TYPE${NC}"
 
-# 2. 定义安装函数
+# 2. Define installation function
 install_packages() {
   case $OS_TYPE in
   "macos")
-    echo -e "${BLUE}正在检查 Homebrew...${NC}"
+    echo -e "${BLUE}Checking Homebrew...${NC}"
     if ! command_exists brew; then
-      echo -e "${YELLOW}Homebrew 未安装，正在安装...${NC}"
+      echo -e "${YELLOW}Homebrew not installed, installing...${NC}"
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      # 根据架构设置 Homebrew 路径
+      # Set Homebrew path based on architecture
       if [[ "$ARCH_TYPE" == "arm64" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
       else
@@ -46,11 +46,11 @@ install_packages() {
       fi
     fi
 
-    echo -e "${BLUE}正在通过 Homebrew 安装依赖...${NC}"
+    echo -e "${BLUE}Installing dependencies via Homebrew...${NC}"
     brew install stow git nvim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta
 
-    # 可选工具
-    echo -e "${YELLOW}是否安装额外的现代化工具? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
+    # Optional tools
+    echo -e "${YELLOW}Install additional modern tools? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
       brew install bottom procs duf dust fd httpie lazydocker glow
@@ -58,11 +58,11 @@ install_packages() {
     ;;
 
   "arch" | "archarm")
-    echo -e "${BLUE}正在通过 Pacman 安装依赖...${NC}"
+    echo -e "${BLUE}Installing dependencies via Pacman...${NC}"
     sudo pacman -S --noconfirm stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta
 
-    # 可选工具
-    echo -e "${YELLOW}是否安装额外的现代化工具? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
+    # Optional tools
+    echo -e "${YELLOW}Install additional modern tools? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
       sudo pacman -S --noconfirm bottom procs duf dust fd httpie
@@ -70,13 +70,13 @@ install_packages() {
     ;;
 
   "ubuntu" | "debian" | "raspbian")
-    echo -e "${BLUE}正在通过 APT 安装基础依赖...${NC}"
+    echo -e "${BLUE}Installing base dependencies via APT...${NC}"
     sudo apt update
     sudo apt install -y stow git neovim fzf ripgrep curl wget gpg kitty tmux
 
-    # 安装 eza (现代化 ls 替代)
+    # Install eza (modern ls replacement)
     if ! command_exists eza; then
-      echo -e "${BLUE}安装 eza...${NC}"
+      echo -e "${BLUE}Installing eza...${NC}"
       sudo mkdir -p /etc/apt/keyrings
       wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
       echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
@@ -84,39 +84,39 @@ install_packages() {
       sudo apt update && sudo apt install -y eza
     fi
 
-    # 安装 bat (在 Debian/Ubuntu 中叫 batcat)
+    # Install bat (called batcat on Debian/Ubuntu)
     if ! command_exists bat && ! command_exists batcat; then
-      echo -e "${BLUE}安装 bat...${NC}"
+      echo -e "${BLUE}Installing bat...${NC}"
       sudo apt install -y bat
       mkdir -p ~/.local/bin
       ln -sf /usr/bin/batcat ~/.local/bin/bat
     fi
 
-    # 安装 zoxide (智能 cd)
+    # Install zoxide (smart cd)
     if ! command_exists zoxide; then
-      echo -e "${BLUE}安装 zoxide...${NC}"
+      echo -e "${BLUE}Installing zoxide...${NC}"
       curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
     fi
 
-    # 安装 fastfetch (系统信息显示)
+    # Install fastfetch (system info)
     if ! command_exists fastfetch; then
-      echo -e "${BLUE}安装 fastfetch...${NC}"
+      echo -e "${BLUE}Installing fastfetch...${NC}"
       if command_exists add-apt-repository; then
         sudo add-apt-repository ppa:zhangsongcui3371/fastfetch -y
         sudo apt update && sudo apt install -y fastfetch
       else
-        echo -e "${YELLOW}无法自动安装 fastfetch，请手动从 GitHub 安装${NC}"
+        echo -e "${YELLOW}Cannot auto-install fastfetch, please install manually from GitHub${NC}"
       fi
     fi
 
-    # 安装 yazi (文件管理器 - 需要从源码安装或下载二进制)
+    # Install yazi (file manager - requires manual install or binary download)
     if ! command_exists yazi; then
-      echo -e "${YELLOW}Yazi 需要手动安装，请访问: https://github.com/sxyazi/yazi${NC}"
+      echo -e "${YELLOW}Yazi requires manual installation, visit: https://github.com/sxyazi/yazi${NC}"
     fi
 
-    # 安装 lazygit (Git TUI)
+    # Install lazygit (Git TUI)
     if ! command_exists lazygit; then
-      echo -e "${BLUE}安装 lazygit...${NC}"
+      echo -e "${BLUE}Installing lazygit...${NC}"
       LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
       curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
       tar xf lazygit.tar.gz lazygit
@@ -124,24 +124,24 @@ install_packages() {
       rm lazygit lazygit.tar.gz
     fi
 
-    # 安装 git-delta (更好的 git diff)
+    # Install git-delta (better git diff)
     if ! command_exists delta; then
-      echo -e "${BLUE}安装 git-delta...${NC}"
+      echo -e "${BLUE}Installing git-delta...${NC}"
       DELTA_VERSION=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"tag_name": "\K[^"]*')
       curl -Lo git-delta.deb "https://github.com/dandavison/delta/releases/latest/download/git-delta_${DELTA_VERSION}_amd64.deb"
       sudo dpkg -i git-delta.deb
       rm git-delta.deb
     fi
 
-    # 可选工具
-    echo -e "${YELLOW}是否安装额外的现代化工具? (bottom, duf, fd, httpie) [y/N]${NC}"
+    # Optional tools
+    echo -e "${YELLOW}Install additional modern tools? (bottom, duf, fd, httpie) [y/N]${NC}"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
-      sudo apt install -y fd-find duf httpie 2>/dev/null || echo -e "${YELLOW}部分工具需要更新的系统版本${NC}"
+      sudo apt install -y fd-find duf httpie 2>/dev/null || echo -e "${YELLOW}Some tools require newer system version${NC}"
 
-      # bottom (htop 替代)
+      # bottom (htop replacement)
       if ! command_exists btm; then
-        echo -e "${BLUE}安装 bottom...${NC}"
+        echo -e "${BLUE}Installing bottom...${NC}"
         BOTTOM_VERSION=$(curl -s "https://api.github.com/repos/ClementTsang/bottom/releases/latest" | grep -Po '"tag_name": "\K[^"]*')
         curl -Lo bottom.deb "https://github.com/ClementTsang/bottom/releases/latest/download/bottom_${BOTTOM_VERSION}_amd64.deb"
         sudo dpkg -i bottom.deb
@@ -149,53 +149,130 @@ install_packages() {
       fi
     fi
 
-    echo -e "${GREEN}Debian/Ubuntu 依赖安装完成！${NC}"
-    echo -e "${YELLOW}注意: 某些工具可能需要重启终端才能生效${NC}"
+    echo -e "${GREEN}Debian/Ubuntu dependencies installation complete!${NC}"
+    echo -e "${YELLOW}Note: Some tools may require terminal restart to take effect${NC}"
     ;;
 
   *)
-    echo -e "${RED}未识别的系统类型: $OS_TYPE，请手动安装基础依赖。${NC}"
-    echo -e "${BLUE}基础依赖: stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux${NC}"
+    echo -e "${RED}Unrecognized system type: $OS_TYPE, please install dependencies manually.${NC}"
+    echo -e "${BLUE}Required dependencies: stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux${NC}"
     ;;
   esac
 }
 
-# 3. 执行安装流程
+# 3. Execute installation
 install_packages
 
-# 4. 执行 Stow 部署
+# 4. Deploy with Stow
 DOTFILES_DIR=$(
   cd "$(dirname "$0")"
   pwd
 )
 cd "$DOTFILES_DIR"
 
-echo -e "${BLUE}正在使用 Stow 建立软链接...${NC}"
+echo -e "${BLUE}Creating symlinks with Stow...${NC}"
 
-# 创建必要的目录
+# Create necessary directories
 mkdir -p ~/.config
 mkdir -p ~/.ssh/sockets
 mkdir -p ~/.local/bin
 
-# 强制清理冲突的旧文件（小心使用！）
+# Clean up conflicting old files (use with caution!)
 for folder in nvim zsh yazi kitty tmux git editorconfig starship ssh; do
-  # 如果目标位置有真实文件而不是链接，先备份
+  # Backup real files (not symlinks) before overwriting
   if [ -f ~/."$folder" ] && ! [ -L ~/."$folder" ]; then
-    echo -e "${YELLOW}备份旧文件: ~/.$folder -> ~/.$folder.bak${NC}"
+    echo -e "${YELLOW}Backing up old file: ~/.$folder -> ~/.$folder.bak${NC}"
     mv ~/."$folder" ~/."$folder".bak
   fi
 
-  # 只 stow 存在的目录
+  # Only stow existing directories
   if [ -d "$folder" ]; then
-    echo -e "${BLUE}部署 $folder 配置...${NC}"
-    stow -R "$folder" # -R 代表 Restow，会重新计算链接
+    echo -e "${BLUE}Deploying $folder config...${NC}"
+    stow -R "$folder" # -R means Restow, recalculates links
   fi
 done
 
-# 5. 安装 Zplug
+# 5. Install Zplug
 if [ ! -d ~/.zplug ]; then
-  echo -e "${BLUE}正在安装 zplug...${NC}"
+  echo -e "${BLUE}Installing zplug...${NC}"
   curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/zplug/master/installer.zsh | zsh
 fi
 
-echo -e "${GREEN}全平台配置部署成功！${NC}"
+# 6. Install development environment tools
+echo -e "${BLUE}Checking development tools...${NC}"
+
+# Install NVM (Node Version Manager)
+if [ -d "$HOME/.nvm" ]; then
+  # Load NVM temporarily to get version info
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  NVM_VERSION=$(nvm --version 2>/dev/null || echo "unknown")
+  echo -e "${GREEN}✓ NVM already installed (version: ${NVM_VERSION})${NC}"
+
+  # Check if Node.js is installed
+  if command_exists node; then
+    NODE_VERSION=$(node --version 2>/dev/null)
+    echo -e "${GREEN}  - Node.js: ${NODE_VERSION}${NC}"
+  else
+    echo -e "${YELLOW}  - No Node.js version installed${NC}"
+    echo -e "${YELLOW}  Tip: Run 'nvm install --lts' to install Node.js LTS${NC}"
+  fi
+
+  echo -e "${YELLOW}Reinstall NVM? [y/N]${NC}"
+  read -r response
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    echo -e "${BLUE}Reinstalling NVM...${NC}"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+    # Reload NVM
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    echo -e "${GREEN}NVM reinstallation complete${NC}"
+  fi
+else
+  echo -e "${BLUE}Installing NVM...${NC}"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+  # Load NVM temporarily
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  # Install Node.js LTS version
+  if command_exists nvm; then
+    echo -e "${BLUE}Installing Node.js LTS via NVM...${NC}"
+    nvm install --lts
+    nvm use --lts
+    nvm alias default 'lts/*'
+  fi
+fi
+
+# Install uv (Python package manager)
+if command_exists uv; then
+  UV_VERSION=$(uv --version 2>/dev/null | awk '{print $2}' || echo "unknown")
+  echo -e "${GREEN}✓ uv already installed (version: ${UV_VERSION})${NC}"
+
+  echo -e "${YELLOW}Reinstall uv? [y/N]${NC}"
+  read -r response
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    echo -e "${BLUE}Reinstalling uv (Python package manager)...${NC}"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    # Add uv to current PATH
+    export PATH="$HOME/.local/bin:$PATH"
+    UV_VERSION=$(uv --version 2>/dev/null | awk '{print $2}' || echo "unknown")
+    echo -e "${GREEN}uv reinstallation complete (version: ${UV_VERSION})${NC}"
+  fi
+else
+  echo -e "${BLUE}Installing uv (Python package manager)...${NC}"
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+
+  # Add uv to current PATH
+  export PATH="$HOME/.local/bin:$PATH"
+
+  if command_exists uv; then
+    UV_VERSION=$(uv --version 2>/dev/null | awk '{print $2}' || echo "unknown")
+    echo -e "${GREEN}uv installation complete (version: ${UV_VERSION})${NC}"
+  fi
+fi
+
+echo -e "${GREEN}Dotfiles deployment successful!${NC}"
+echo -e "${YELLOW}Tip: Restart your terminal or run 'source ~/.zshrc' to apply changes${NC}"

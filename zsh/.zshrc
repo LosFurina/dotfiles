@@ -10,9 +10,9 @@ fi
 export DOTZSH="$HOME/dotfiles/zsh"
 
 # 加载模块
-source "$DOTZSH/.zsh_env"
-source "$DOTZSH/.zsh_plugins"
-source "$DOTZSH/.zsh_aliases"
+[[ -f "$DOTZSH/.zsh_env" ]] && source "$DOTZSH/.zsh_env"
+[[ -f "$DOTZSH/.zsh_plugins" ]] && source "$DOTZSH/.zsh_plugins"
+[[ -f "$DOTZSH/.zsh_aliases" ]] && source "$DOTZSH/.zsh_aliases"
 
 # 补全初始化
 autoload -U compinit && compinit

@@ -113,8 +113,8 @@ if [[ -n "$ZPLUG_HOME" ]]; then
   # Tmux 集成
   # zplug "plugins/tmux", from:oh-my-zsh
 
-  # Node.js 版本管理
-  zplug "plugins/nvm", from:oh-my-zsh
+  # Node.js 版本管理（已在 .zsh_env 中配置懒加载）
+  # zplug "plugins/nvm", from:oh-my-zsh
 
   # GitHub CLI 补全
   # zplug "plugins/gh", from:oh-my-zsh
@@ -140,9 +140,9 @@ if [[ -n "$ZPLUG_HOME" ]]; then
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)
   ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
-  # Command Time 配置
+  # Command Time configuration
   ZSH_COMMAND_TIME_MIN_SECONDS=3
-  ZSH_COMMAND_TIME_MSG="执行时间: %s"
+  ZSH_COMMAND_TIME_MSG="Execution time: %s"
   ZSH_COMMAND_TIME_COLOR="cyan"
 
   # History Substring Search 配置

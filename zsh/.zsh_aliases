@@ -303,7 +303,7 @@ mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# 提取各种压缩包
+# Extract various archives
 extract() {
     if [ -f "$1" ]; then
         case "$1" in
@@ -318,10 +318,10 @@ extract() {
             *.zip)       unzip "$1"       ;;
             *.Z)         uncompress "$1"  ;;
             *.7z)        7z x "$1"        ;;
-            *)           echo "'$1' 无法解压" ;;
+            *)           echo "'$1' cannot be extracted" ;;
         esac
     else
-        echo "'$1' 不是有效的文件"
+        echo "'$1' is not a valid file"
     fi
 }
 
@@ -365,39 +365,39 @@ backup() {
 }
 
 # ============================================
-# 清理函数
+# Cleanup functions
 # ============================================
 
-# 清理 Docker
+# Clean Docker
 cleanup-docker() {
-    echo "清理 Docker 系统..."
+    echo "Cleaning Docker system..."
     docker system prune -af --volumes
-    echo "✅ Docker 清理完成"
+    echo "✅ Docker cleanup complete"
 }
 
-# 清理 Homebrew (macOS)
+# Clean Homebrew (macOS)
 cleanup-brew() {
     if command -v brew >/dev/null 2>&1; then
-        echo "清理 Homebrew..."
+        echo "Cleaning Homebrew..."
         brew cleanup
         brew autoremove
-        echo "✅ Homebrew 清理完成"
+        echo "✅ Homebrew cleanup complete"
     fi
 }
 
-# 清理 npm
+# Clean npm
 cleanup-npm() {
-    echo "清理 npm 缓存..."
+    echo "Cleaning npm cache..."
     npm cache clean --force
-    echo "✅ npm 清理完成"
+    echo "✅ npm cleanup complete"
 }
 
-# 全部清理
+# Clean all
 cleanup-all() {
     cleanup-docker
     cleanup-brew
     cleanup-npm
-    echo "🎉 全部清理完成！"
+    echo "🎉 All cleanup complete!"
 }
 
 # ============================================
