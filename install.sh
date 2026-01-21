@@ -59,14 +59,19 @@ install_packages() {
 
   "arch" | "archarm")
     echo -e "${BLUE}Installing dependencies via Pacman...${NC}"
-    sudo pacman -S --noconfirm stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta
+    # 使用 --needed 避免重新安装已存在的包
+    sudo pacman -S --needed --noconfirm stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta || {
+      echo -e "${RED}Failed to install some packages. Continuing anyway...${NC}"
+    }
 
     # Optional tools
     echo -e "${YELLOW}Install additional modern tools? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
-      sudo pacman -S --noconfirm bottom procs duf dust fd httpie
+      sudo pacman -S --needed --noconfirm bottom procs duf dust fd httpie
     fi
+
+    echo -e "${GREEN}Arch Linux dependencies installation complete!${NC}"
     ;;
 
   "ubuntu" | "debian" | "raspbian")
@@ -163,42 +168,15 @@ install_packages() {
 # 3. Execute installation
 install_packages
 
-# 4. Deploy with Stow
-DOTFILES_DIR=$(
-  cd "$(dirname "$0")"
-  pwd
-)
-cd "$DOTFILES_DIR"
-
-echo -e "${BLUE}Creating symlinks with Stow...${NC}"
-
-# Create necessary directories
-mkdir -p ~/.config
-mkdir -p ~/.ssh/sockets
-mkdir -p ~/.local/bin
-
-# Clean up conflicting old files (use with caution!)
-for folder in nvim zsh yazi kitty tmux git editorconfig starship ssh; do
-  # Backup real files (not symlinks) before overwriting
-  if [ -f ~/."$folder" ] && ! [ -L ~/."$folder" ]; then
-    echo -e "${YELLOW}Backing up old file: ~/.$folder -> ~/.$folder.bak${NC}"
-    mv ~/."$folder" ~/."$folder".bak
-  fi
-
-  # Only stow existing directories
-  if [ -d "$folder" ]; then
-    echo -e "${BLUE}Deploying $folder config...${NC}"
-    stow -R "$folder" # -R means Restow, recalculates links
-  fi
-done
-
-# 5. Install Zplug
+# 4. Install Zplug (BEFORE stow to avoid shell errors)
 if [ ! -d ~/.zplug ]; then
   echo -e "${BLUE}Installing zplug...${NC}"
   curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/zplug/master/installer.zsh | zsh
+else
+  echo -e "${GREEN}✓ Zplug already installed${NC}"
 fi
 
-# 6. Install development environment tools
+# 5. Install development environment tools (BEFORE stow!)
 echo -e "${BLUE}Checking development tools...${NC}"
 
 # Install NVM (Node Version Manager)
@@ -273,6 +251,35 @@ else
     echo -e "${GREEN}uv installation complete (version: ${UV_VERSION})${NC}"
   fi
 fi
+
+# 6. Deploy with Stow (AFTER all dependencies are installed!)
+DOTFILES_DIR=$(
+  cd "$(dirname "$0")"
+  pwd
+)
+cd "$DOTFILES_DIR"
+
+echo -e "${BLUE}Creating symlinks with Stow...${NC}"
+
+# Create necessary directories
+mkdir -p ~/.config
+mkdir -p ~/.ssh/sockets
+mkdir -p ~/.local/bin
+
+# Clean up conflicting old files (use with caution!)
+for folder in nvim zsh yazi kitty tmux git editorconfig starship ssh; do
+  # Backup real files (not symlinks) before overwriting
+  if [ -f ~/."$folder" ] && ! [ -L ~/."$folder" ]; then
+    echo -e "${YELLOW}Backing up old file: ~/.$folder -> ~/.$folder.bak${NC}"
+    mv ~/."$folder" ~/."$folder".bak
+  fi
+
+  # Only stow existing directories
+  if [ -d "$folder" ]; then
+    echo -e "${BLUE}Deploying $folder config...${NC}"
+    stow -R "$folder" # -R means Restow, recalculates links
+  fi
+done
 
 echo -e "${GREEN}Dotfiles deployment successful!${NC}"
 echo -e "${YELLOW}Tip: Restart your terminal or run 'source ~/.zshrc' to apply changes${NC}"

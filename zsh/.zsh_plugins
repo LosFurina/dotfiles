@@ -1,14 +1,24 @@
 # === Zplug 插件管理 ===
 # 自动寻找 zplug
+[[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Searching for zplug..."
+ZPLUG_INIT_LOADED=false
 if [ -f ~/.zplug/init.zsh ]; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at ~/.zplug/init.zsh"
     source ~/.zplug/init.zsh
+    ZPLUG_INIT_LOADED=true
 elif [ -f /usr/share/zsh/scripts/zplug/init.zsh ]; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at /usr/share/zsh/scripts/zplug/init.zsh"
     source /usr/share/zsh/scripts/zplug/init.zsh
+    ZPLUG_INIT_LOADED=true
 elif [ -f /opt/homebrew/opt/zplug/init.zsh ]; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at /opt/homebrew/opt/zplug/init.zsh"
     source /opt/homebrew/opt/zplug/init.zsh
+    ZPLUG_INIT_LOADED=true
 fi
 
-if [[ -n "$ZPLUG_HOME" ]]; then
+# 检查 zplug 是否正确初始化
+if [[ -n "$ZPLUG_HOME" ]] && [[ "$ZPLUG_INIT_LOADED" == true ]]; then
+  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Zplug initialized successfully, ZPLUG_HOME=$ZPLUG_HOME"
   # ============================================
   # 主题
   # ============================================
@@ -124,12 +134,16 @@ if [[ -n "$ZPLUG_HOME" ]]; then
   # ============================================
 
   # 检查并安装未安装的插件
+  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Checking zplug plugins..."
   if ! zplug check; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Installing missing zplug plugins..."
     zplug install
   fi
 
   # 加载所有插件
+  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Loading zplug plugins..."
   zplug load
+  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Zplug plugins loaded successfully"
 
   # ============================================
   # 插件配置
@@ -150,5 +164,11 @@ if [[ -n "$ZPLUG_HOME" ]]; then
   bindkey '^[[B' history-substring-search-down
   bindkey -M vicmd 'k' history-substring-search-up
   bindkey -M vicmd 'j' history-substring-search-down
+else
+  # Zplug 未正确初始化，显示警告
+  echo "⚠️  Warning: Zplug not found or failed to initialize"
+  echo "   Shell will continue without plugins."
+  echo "   To install zplug, run:"
+  echo "   curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/zplug/master/installer.zsh | zsh"
 fi
 
