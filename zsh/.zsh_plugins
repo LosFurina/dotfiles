@@ -1,149 +1,54 @@
-# === Zplug 插件管理 ===
-# 自动寻找 zplug
-[[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Searching for zplug..."
-ZPLUG_INIT_LOADED=false
-if [ -f ~/.zplug/init.zsh ]; then
-    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at ~/.zplug/init.zsh"
-    source ~/.zplug/init.zsh
-    ZPLUG_INIT_LOADED=true
-elif [ -f /usr/share/zsh/scripts/zplug/init.zsh ]; then
-    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at /usr/share/zsh/scripts/zplug/init.zsh"
-    source /usr/share/zsh/scripts/zplug/init.zsh
-    ZPLUG_INIT_LOADED=true
-elif [ -f /opt/homebrew/opt/zplug/init.zsh ]; then
-    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found zplug at /opt/homebrew/opt/zplug/init.zsh"
-    source /opt/homebrew/opt/zplug/init.zsh
-    ZPLUG_INIT_LOADED=true
-fi
+# === Antidote 插件管理 ===
+# 自动寻找 antidote
+[[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Searching for antidote..."
+ANTIDOTE_INIT_LOADED=false
 
-# 检查 zplug 是否正确初始化
-if [[ -n "$ZPLUG_HOME" ]] && [[ "$ZPLUG_INIT_LOADED" == true ]]; then
-  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Zplug initialized successfully, ZPLUG_HOME=$ZPLUG_HOME"
-  # ============================================
-  # 主题
-  # ============================================
+# 定义可能的 antidote 路径
+ANTIDOTE_PATHS=(
+  "${ZDOTDIR:-~}/.antidote/antidote.zsh"
+  "/usr/share/zsh-antidote/antidote.zsh"
+  "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
+  "/usr/local/opt/antidote/share/antidote/antidote.zsh"
+  "$HOME/.local/share/antidote/antidote.zsh"
+)
 
-  # Powerlevel10k - 快速美观的提示符
-  zplug "romkatv/powerlevel10k", as:theme, depth:1
-
-  # ============================================
-  # 核心功能增强
-  # ============================================
-
-  # 自动建议 (根据历史显示命令建议)
-  zplug "zsh-users/zsh-autosuggestions"
-
-  # 补全增强
-  zplug "zsh-users/zsh-completions"
-
-  # FZF 集成的 tab 补全
-  zplug "Aloxaf/fzf-tab"
-
-  # ============================================
-  # 编辑器模式
-  # ============================================
-
-  # Vi 模式增强
-  zplug "jeffreytse/zsh-vi-mode"
-
-  # 自动配对括号/引号
-  zplug "hlissner/zsh-autopair", defer:2
-
-  # ============================================
-  # Git 增强
-  # ============================================
-
-  # Forgit - FZF 风格的 Git 命令
-  zplug "wfxr/forgit"
-
-  # ============================================
-  # 提示与帮助
-  # ============================================
-
-  # 别名提示 (当你输入完整命令时提示有可用别名)
-  zplug "djui/alias-tips"
-
-  # 命令时间统计 (显示长时间运行命令的执行时间)
-  zplug "popstas/zsh-command-time"
-
-  # ============================================
-  # 开发工具集成
-  # ============================================
-
-  # Docker 补全增强
-  zplug "plugins/docker", from:oh-my-zsh
-  zplug "plugins/docker-compose", from:oh-my-zsh
-
-  # Kubectl 补全和别名
-  zplug "plugins/kubectl", from:oh-my-zsh
-
-  # Python 虚拟环境自动切换
-  zplug "MichaelAquilina/zsh-autoswitch-virtualenv"
-
-  # 系统剪贴板集成
-  zplug "plugins/copyfile", from:oh-my-zsh  # 复制文件内容
-  zplug "plugins/copybuffer", from:oh-my-zsh  # 复制当前命令行
-
-  # ============================================
-  # 历史记录增强
-  # ============================================
-
-  # 历史子串搜索 (上下箭头搜索历史)
-  zplug "zsh-users/zsh-history-substring-search"
-
-  # ============================================
-  # 语法高亮 (必须最后加载)
-  # ============================================
-
-  # 实时语法高亮
-  zplug "zsh-users/zsh-syntax-highlighting", defer:2
-
-  # ============================================
-  # 可选插件 (根据需要取消注释)
-  # ============================================
-
-  # 颜色增强
-  # zplug "chrissicool/zsh-256color"
-
-  # 自动 ls (cd 后自动显示目录内容)
-  # zplug "desyncr/auto-ls"
-
-  # 更好的目录切换 (autojump 替代，但你已经有 zoxide)
-  # zplug "agkozak/zsh-z"
-
-  # Sudo 插件 (双击 ESC 在命令前添加 sudo)
-  # zplug "plugins/sudo", from:oh-my-zsh
-
-  # 常用别名集合
-  # zplug "plugins/common-aliases", from:oh-my-zsh
-
-  # 提取压缩包的 extract 命令 (你已经在 aliases 中定义了)
-  # zplug "plugins/extract", from:oh-my-zsh
-
-  # Tmux 集成
-  # zplug "plugins/tmux", from:oh-my-zsh
-
-  # Node.js 版本管理（已在 .zsh_env 中配置懒加载）
-  # zplug "plugins/nvm", from:oh-my-zsh
-
-  # GitHub CLI 补全
-  # zplug "plugins/gh", from:oh-my-zsh
-
-  # ============================================
-  # 安装与加载
-  # ============================================
-
-  # 检查并安装未安装的插件
-  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Checking zplug plugins..."
-  if ! zplug check; then
-    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Installing missing zplug plugins..."
-    zplug install
+# 尝试加载 antidote
+for antidote_path in "${ANTIDOTE_PATHS[@]}"; do
+  if [ -f "$antidote_path" ]; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Found antidote at $antidote_path"
+    source "$antidote_path"
+    ANTIDOTE_INIT_LOADED=true
+    break
   fi
+done
 
-  # 加载所有插件
-  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Loading zplug plugins..."
-  zplug load
-  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Zplug plugins loaded successfully"
+# 检查 antidote 是否正确初始化
+if [[ "$ANTIDOTE_INIT_LOADED" == true ]] && command -v antidote &>/dev/null; then
+  [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Antidote initialized successfully"
+
+  # 设置插件文件路径
+  ANTIDOTE_PLUGINS="${ZDOTDIR:-$HOME}/.zsh_plugins.txt"
+  ANTIDOTE_STATIC="${ZDOTDIR:-$HOME}/.zsh_plugins.zsh"
+
+  # 检查插件文件是否存在
+  if [[ -f "$ANTIDOTE_PLUGINS" ]]; then
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Loading plugins from $ANTIDOTE_PLUGINS"
+
+    # 使用静态加载以提高性能
+    # 如果静态文件不存在或插件列表更新了，则重新生成
+    if [[ ! -f "$ANTIDOTE_STATIC" ]] || [[ "$ANTIDOTE_PLUGINS" -nt "$ANTIDOTE_STATIC" ]]; then
+      [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Generating static plugin file..."
+      antidote bundle <"$ANTIDOTE_PLUGINS" >"$ANTIDOTE_STATIC"
+    fi
+
+    # 加载静态插件文件
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Sourcing static plugins..."
+    source "$ANTIDOTE_STATIC"
+    [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Antidote plugins loaded successfully"
+  else
+    echo "⚠️  Warning: Plugin file not found: $ANTIDOTE_PLUGINS"
+    echo "   Create it with your desired plugins."
+  fi
 
   # ============================================
   # 插件配置
@@ -165,10 +70,10 @@ if [[ -n "$ZPLUG_HOME" ]] && [[ "$ZPLUG_INIT_LOADED" == true ]]; then
   bindkey -M vicmd 'k' history-substring-search-up
   bindkey -M vicmd 'j' history-substring-search-down
 else
-  # Zplug 未正确初始化，显示警告
-  echo "⚠️  Warning: Zplug not found or failed to initialize"
+  # Antidote 未正确初始化，显示警告
+  echo "⚠️  Warning: Antidote not found or failed to initialize"
   echo "   Shell will continue without plugins."
-  echo "   To install zplug, run:"
-  echo "   curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/zplug/master/installer.zsh | zsh"
+  echo "   To install antidote, run one of:"
+  echo "   - macOS: brew install antidote"
+  echo "   - Linux: git clone --depth=1 https://github.com/mattmc3/antidote.git \${ZDOTDIR:-~}/.antidote"
 fi
-

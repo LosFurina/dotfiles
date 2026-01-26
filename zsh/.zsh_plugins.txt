@@ -1,0 +1,60 @@
+# ============================================
+# 主题
+# ============================================
+romkatv/powerlevel10k
+
+# ============================================
+# 核心功能增强
+# ============================================
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-completions
+Aloxaf/fzf-tab
+
+# ============================================
+# 编辑器模式
+# ============================================
+jeffreytse/zsh-vi-mode
+hlissner/zsh-autopair
+
+# ============================================
+# Git 增强
+# ============================================
+wfxr/forgit
+
+# ============================================
+# 提示与帮助
+# ============================================
+djui/alias-tips
+popstas/zsh-command-time
+
+# ============================================
+# 开发工具集成
+# ============================================
+ohmyzsh/ohmyzsh path:plugins/docker
+ohmyzsh/ohmyzsh path:plugins/docker-compose
+ohmyzsh/ohmyzsh path:plugins/kubectl
+MichaelAquilina/zsh-autoswitch-virtualenv
+ohmyzsh/ohmyzsh path:plugins/copyfile
+ohmyzsh/ohmyzsh path:plugins/copybuffer
+
+# ============================================
+# 历史记录增强
+# ============================================
+zsh-users/zsh-history-substring-search
+
+# ============================================
+# 语法高亮 (必须最后加载)
+# ============================================
+zsh-users/zsh-syntax-highlighting
+
+# ============================================
+# 可选插件 (根据需要取消注释)
+# ============================================
+# chrissicool/zsh-256color
+# desyncr/auto-ls
+# agkozak/zsh-z
+# ohmyzsh/ohmyzsh path:plugins/sudo
+# ohmyzsh/ohmyzsh path:plugins/common-aliases
+# ohmyzsh/ohmyzsh path:plugins/extract
+# ohmyzsh/ohmyzsh path:plugins/tmux
+# ohmyzsh/ohmyzsh path:plugins/gh

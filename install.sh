@@ -36,14 +36,42 @@ install_packages() {
   "macos")
     echo -e "${BLUE}Checking Homebrew...${NC}"
     if ! command_exists brew; then
-      echo -e "${YELLOW}Homebrew not installed, installing...${NC}"
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      # Set Homebrew path based on architecture
-      if [[ "$ARCH_TYPE" == "arm64" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+      echo -e "${YELLOW}⚠️  Homebrew is not installed on your system.${NC}"
+      echo -e "${YELLOW}   Homebrew is required to install most dependencies (git, neovim, etc.)${NC}"
+      echo -e "${YELLOW}   Without Homebrew, the installation may fail or produce unpredictable errors.${NC}"
+      echo ""
+      echo -e "${BLUE}Do you want to install Homebrew now? [Y/n]${NC}"
+      read -r response
+
+      if [[ "$response" =~ ^[Nn]$ ]]; then
+        echo -e "${RED}⚠️  Skipping Homebrew installation.${NC}"
+        echo -e "${RED}   You will need to manually install all dependencies.${NC}"
+        echo -e "${RED}   Installation may fail or be incomplete.${NC}"
+        echo ""
+        echo -e "${YELLOW}Press Enter to continue anyway, or Ctrl+C to abort...${NC}"
+        read -r
       else
-        eval "$(/usr/local/bin/brew shellenv)"
+        echo -e "${BLUE}Installing Homebrew...${NC}"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        # Set Homebrew path based on architecture
+        if [[ "$ARCH_TYPE" == "arm64" ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+          eval "$(/usr/local/bin/brew shellenv)"
+        fi
+
+        # Verify installation
+        if command_exists brew; then
+          echo -e "${GREEN}✓ Homebrew installed successfully${NC}"
+        else
+          echo -e "${RED}✗ Homebrew installation failed${NC}"
+          echo -e "${RED}  Please install Homebrew manually: https://brew.sh${NC}"
+          exit 1
+        fi
       fi
+    else
+      echo -e "${GREEN}✓ Homebrew is already installed${NC}"
     fi
 
     echo -e "${BLUE}Installing dependencies via Homebrew...${NC}"
@@ -168,12 +196,46 @@ install_packages() {
 # 3. Execute installation
 install_packages
 
-# 4. Install Zplug (BEFORE stow to avoid shell errors)
-if [ ! -d ~/.zplug ]; then
-  echo -e "${BLUE}Installing zplug...${NC}"
-  curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/zplug/master/installer.zsh | zsh
-else
-  echo -e "${GREEN}✓ Zplug already installed${NC}"
+# 4. Install Antidote (BEFORE stow to avoid shell errors)
+echo -e "${BLUE}Checking Antidote (Zsh plugin manager)...${NC}"
+
+ANTIDOTE_INSTALLED=false
+
+# Check common antidote installation paths
+if command_exists antidote; then
+  ANTIDOTE_INSTALLED=true
+  echo -e "${GREEN}✓ Antidote already installed (via package manager)${NC}"
+elif [ -f "${ZDOTDIR:-~}/.antidote/antidote.zsh" ]; then
+  ANTIDOTE_INSTALLED=true
+  echo -e "${GREEN}✓ Antidote already installed (at ${ZDOTDIR:-~}/.antidote)${NC}"
+fi
+
+if [ "$ANTIDOTE_INSTALLED" = false ]; then
+  echo -e "${BLUE}Installing Antidote...${NC}"
+
+  # Install based on OS
+  case $OS_TYPE in
+  "macos")
+    if command_exists brew; then
+      brew install antidote
+    else
+      # Fallback to git clone
+      git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-~}/.antidote"
+    fi
+    ;;
+  *)
+    # For Linux and others, use git clone
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-~}/.antidote"
+    ;;
+  esac
+
+  # Verify installation
+  if command_exists antidote || [ -f "${ZDOTDIR:-~}/.antidote/antidote.zsh" ]; then
+    echo -e "${GREEN}✓ Antidote installed successfully${NC}"
+  else
+    echo -e "${YELLOW}⚠️  Antidote installation may have failed${NC}"
+    echo -e "${YELLOW}   Zsh plugins may not work correctly${NC}"
+  fi
 fi
 
 # 5. Install development environment tools (BEFORE stow!)
