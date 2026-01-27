@@ -75,7 +75,7 @@ install_packages() {
     fi
 
     echo -e "${BLUE}Installing dependencies via Homebrew...${NC}"
-    brew install stow git nvim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta
+    brew install git nvim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta
 
     # Optional tools
     echo -e "${YELLOW}Install additional modern tools? (bottom, procs, duf, dust, fd, httpie) [y/N]${NC}"
@@ -88,7 +88,7 @@ install_packages() {
   "arch" | "archarm")
     echo -e "${BLUE}Installing dependencies via Pacman...${NC}"
     # 使用 --needed 避免重新安装已存在的包
-    sudo pacman -S --needed --noconfirm stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta || {
+    sudo pacman -S --needed --noconfirm git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux lazygit git-delta || {
       echo -e "${RED}Failed to install some packages. Continuing anyway...${NC}"
     }
 
@@ -105,7 +105,7 @@ install_packages() {
   "ubuntu" | "debian" | "raspbian")
     echo -e "${BLUE}Installing base dependencies via APT...${NC}"
     sudo apt update
-    sudo apt install -y stow git neovim fzf ripgrep curl wget gpg kitty tmux
+    sudo apt install -y git neovim fzf ripgrep curl wget gpg kitty tmux
 
     # Install eza (modern ls replacement)
     if ! command_exists eza; then
@@ -188,7 +188,7 @@ install_packages() {
 
   *)
     echo -e "${RED}Unrecognized system type: $OS_TYPE, please install dependencies manually.${NC}"
-    echo -e "${BLUE}Required dependencies: stow git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux${NC}"
+    echo -e "${BLUE}Required dependencies: git neovim eza bat zoxide fzf ripgrep fastfetch kitty yazi tmux${NC}"
     ;;
   esac
 }
@@ -314,34 +314,94 @@ else
   fi
 fi
 
-# 6. Deploy with Stow (AFTER all dependencies are installed!)
+# 6. Create symlinks (AFTER all dependencies are installed!)
 DOTFILES_DIR=$(
   cd "$(dirname "$0")"
   pwd
 )
 cd "$DOTFILES_DIR"
 
-echo -e "${BLUE}Creating symlinks with Stow...${NC}"
+echo -e "${BLUE}Creating symlinks...${NC}"
 
 # Create necessary directories
 mkdir -p ~/.config
 mkdir -p ~/.ssh/sockets
 mkdir -p ~/.local/bin
 
-# Clean up conflicting old files (use with caution!)
-for folder in nvim zsh yazi kitty tmux git editorconfig starship ssh; do
-  # Backup real files (not symlinks) before overwriting
-  if [ -f ~/."$folder" ] && ! [ -L ~/."$folder" ]; then
-    echo -e "${YELLOW}Backing up old file: ~/.$folder -> ~/.$folder.bak${NC}"
-    mv ~/."$folder" ~/."$folder".bak
+# Helper function: create symlink with backup
+create_symlink() {
+  local source="$1"
+  local target="$2"
+
+  if [ -L "$target" ]; then
+    echo -e "${YELLOW}  Removing existing symlink: $target${NC}"
+    rm "$target"
+  elif [ -e "$target" ]; then
+    echo -e "${YELLOW}  Backing up: $target -> ${target}.bak${NC}"
+    mv "$target" "${target}.bak"
   fi
 
-  # Only stow existing directories
-  if [ -d "$folder" ]; then
-    echo -e "${BLUE}Deploying $folder config...${NC}"
-    stow -R "$folder" # -R means Restow, recalculates links
+  ln -s "$source" "$target"
+  echo -e "${GREEN}  ✓ Linked: $target -> $source${NC}"
+}
+
+# Define configs: "folder_name:source_path:target_path"
+# source_path is relative to DOTFILES_DIR/folder_name
+# target_path is the symlink location
+declare -A CONFIGS=(
+  ["nvim"]=".config/nvim:$HOME/.config/nvim"
+  ["zsh"]=".zshrc:$HOME/.zshrc"
+  ["zsh_plugins"]="zsh:.zsh_plugins.txt:$HOME/.zsh_plugins.txt"
+  ["yazi"]=".config/yazi:$HOME/.config/yazi"
+  ["kitty"]=".config/kitty:$HOME/.config/kitty"
+  ["tmux"]=".tmux.conf:$HOME/.tmux.conf"
+  ["git"]=".gitconfig:$HOME/.gitconfig"
+  ["editorconfig"]=".editorconfig:$HOME/.editorconfig"
+  ["starship"]=".config/starship.toml:$HOME/.config/starship.toml"
+  ["ssh"]=".ssh/config:$HOME/.ssh/config"
+)
+
+echo ""
+echo -e "${BLUE}=== Configuration Symlinks ===${NC}"
+echo -e "${YELLOW}For each config, enter y to create symlink, n to skip${NC}"
+echo ""
+
+for config_key in nvim zsh zsh_plugins yazi kitty tmux git editorconfig starship ssh; do
+  config_value="${CONFIGS[$config_key]}"
+
+  # Check if config has 3 parts (folder:src:target) or 2 parts (src:target)
+  IFS=':' read -ra parts <<< "$config_value"
+  if [ ${#parts[@]} -eq 3 ]; then
+    # Special case: folder is different from config_key
+    actual_folder="${parts[0]}"
+    src_rel="${parts[1]}"
+    target="${parts[2]}"
+  else
+    # Normal case: folder is same as config_key
+    actual_folder="$config_key"
+    src_rel="${parts[0]}"
+    target="${parts[1]}"
+  fi
+
+  if [ -d "$actual_folder" ]; then
+    source_path="$DOTFILES_DIR/$actual_folder/$src_rel"
+
+    if [ -e "$source_path" ]; then
+      echo -e "${BLUE}[$config_key]${NC} $target"
+      read -p "  Create symlink? [y/N] " response
+      if [[ "$response" =~ ^[Yy]$ ]]; then
+        # Ensure parent directory exists
+        mkdir -p "$(dirname "$target")"
+        create_symlink "$source_path" "$target"
+      else
+        echo -e "  Skipped"
+      fi
+      echo ""
+    else
+      echo -e "${YELLOW}[$config_key] Source not found: $source_path, skipping${NC}"
+    fi
   fi
 done
 
-echo -e "${GREEN}Dotfiles deployment successful!${NC}"
+echo -e "${GREEN}Dotfiles setup complete!${NC}"
 echo -e "${YELLOW}Tip: Restart your terminal or run 'source ~/.zshrc' to apply changes${NC}"
