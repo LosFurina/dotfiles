@@ -345,21 +345,23 @@ create_symlink() {
   echo -e "${GREEN}  ✓ Linked: $target -> $source${NC}"
 }
 
-# Define configs: "folder_name:source_path:target_path"
-# source_path is relative to DOTFILES_DIR/folder_name
-# target_path is the symlink location
-declare -A CONFIGS=(
-  ["nvim"]=".config/nvim:$HOME/.config/nvim"
-  ["zsh"]=".zshrc:$HOME/.zshrc"
-  ["zsh_plugins"]="zsh:.zsh_plugins.txt:$HOME/.zsh_plugins.txt"
-  ["yazi"]=".config/yazi:$HOME/.config/yazi"
-  ["kitty"]=".config/kitty:$HOME/.config/kitty"
-  ["tmux"]=".tmux.conf:$HOME/.tmux.conf"
-  ["git"]=".gitconfig:$HOME/.gitconfig"
-  ["editorconfig"]=".editorconfig:$HOME/.editorconfig"
-  ["starship"]=".config/starship.toml:$HOME/.config/starship.toml"
-  ["ssh"]=".ssh/config:$HOME/.ssh/config"
-)
+# Helper function: get config info (bash 3.x compatible)
+# Returns: folder:src_rel:target
+get_config_info() {
+  local config_key="$1"
+  case "$config_key" in
+    nvim)        echo "nvim:.config/nvim:$HOME/.config/nvim" ;;
+    zsh)         echo "zsh:.zshrc:$HOME/.zshrc" ;;
+    zsh_plugins) echo "zsh:.zsh_plugins.txt:$HOME/.zsh_plugins.txt" ;;
+    yazi)        echo "yazi:.config/yazi:$HOME/.config/yazi" ;;
+    kitty)       echo "kitty:.config/kitty:$HOME/.config/kitty" ;;
+    tmux)        echo "tmux:.tmux.conf:$HOME/.tmux.conf" ;;
+    git)         echo "git:.gitconfig:$HOME/.gitconfig" ;;
+    editorconfig) echo "editorconfig:.editorconfig:$HOME/.editorconfig" ;;
+    starship)    echo "starship:.config/starship.toml:$HOME/.config/starship.toml" ;;
+    ssh)         echo "ssh:.ssh/config:$HOME/.ssh/config" ;;
+  esac
+}
 
 echo ""
 echo -e "${BLUE}=== Configuration Symlinks ===${NC}"
@@ -367,21 +369,12 @@ echo -e "${YELLOW}For each config, enter y to create symlink, n to skip${NC}"
 echo ""
 
 for config_key in nvim zsh zsh_plugins yazi kitty tmux git editorconfig starship ssh; do
-  config_value="${CONFIGS[$config_key]}"
+  config_info=$(get_config_info "$config_key")
 
-  # Check if config has 3 parts (folder:src:target) or 2 parts (src:target)
-  IFS=':' read -ra parts <<< "$config_value"
-  if [ ${#parts[@]} -eq 3 ]; then
-    # Special case: folder is different from config_key
-    actual_folder="${parts[0]}"
-    src_rel="${parts[1]}"
-    target="${parts[2]}"
-  else
-    # Normal case: folder is same as config_key
-    actual_folder="$config_key"
-    src_rel="${parts[0]}"
-    target="${parts[1]}"
-  fi
+  # Parse folder:src_rel:target
+  actual_folder=$(echo "$config_info" | cut -d: -f1)
+  src_rel=$(echo "$config_info" | cut -d: -f2)
+  target=$(echo "$config_info" | cut -d: -f3)
 
   if [ -d "$actual_folder" ]; then
     source_path="$DOTFILES_DIR/$actual_folder/$src_rel"
