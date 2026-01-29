@@ -327,7 +327,6 @@ djui/alias-tips
 popstas/zsh-command-time
 
 # 开发工具集成
-ohmyzsh/ohmyzsh path:plugins/kubectl
 MichaelAquilina/zsh-autoswitch-virtualenv
 ohmyzsh/ohmyzsh path:plugins/copyfile
 ohmyzsh/ohmyzsh path:plugins/copybuffer
@@ -820,6 +819,11 @@ viewnotes() {
 [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] Initializing external tools..."
 [ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+# Kubectl completion
+if command -v kubectl >/dev/null 2>&1; then
+  source <(kubectl completion zsh)
+fi
 if command -v fzf >/dev/null 2>&1; then
   # 尝试新版 fzf --zsh，失败则尝试旧版路径
   if fzf --zsh >/dev/null 2>&1; then
