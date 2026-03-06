@@ -844,3 +844,11 @@ fi
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 [[ -n "$ZSHRC_DEBUG" ]] && echo "[DEBUG] .zshrc loaded successfully!"
+
+# pnpm
+export PNPM_HOME="/home/wayne/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
