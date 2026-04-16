@@ -296,10 +296,13 @@ fi
 # 设置 antidote 路径
 ANTIDOTE_HOME="${ANTIDOTE_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/antidote}"
 
-# 自动安装 antidote（如果不存在）
+# 自动安装 antidote（如果不存在，加超时保护避免断网阻塞）
 if [[ ! -d "$ANTIDOTE_HOME" ]]; then
     echo "Installing antidote..."
-    git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_HOME"
+    timeout 10 git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_HOME" || {
+        echo "Warning: Failed to install antidote (network issue?). Shell plugins will not be loaded."
+        return 0
+    }
 fi
 
 # 加载 antidote
@@ -820,9 +823,13 @@ viewnotes() {
 [ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
-# Kubectl completion
+# Kubectl completion（懒加载，避免断网时阻塞 shell 启动）
 if command -v kubectl >/dev/null 2>&1; then
-  source <(kubectl completion zsh)
+  kubectl() {
+    unfunction kubectl
+    source <(command kubectl completion zsh)
+    command kubectl "$@"
+  }
 fi
 if command -v fzf >/dev/null 2>&1; then
   # 尝试新版 fzf --zsh，失败则尝试旧版路径
